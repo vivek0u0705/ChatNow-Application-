@@ -12,7 +12,7 @@ dotenv.config();
 app.use(express.json({ limit: '200kb' }));
 app.use(cookieParser());
 app.use(cors({
-    origin:'http://localhost:5173',
+    origin:'http://localhost:5137',
     credentials:true,
 }))
 const PORT=process.env.PORT;
