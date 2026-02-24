@@ -1,44 +1,61 @@
-import express from 'express';
-import authRoutes from './routes/auth.route.js';
-import messageRoutes from './routes/message.route.js'
-import dotenv from 'dotenv';
-import {connectDB} from './lib/db.js';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import {app,server} from './lib/socket.js';
-import path from 'path';
+import express from "express";
+import authRoutes from "./routes/auth.route.js";
+import messageRoutes from "./routes/message.route.js";
+import dotenv from "dotenv";
+import { connectDB } from "./lib/db.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { app, server } from "./lib/socket.js";
+import path from "path";
 
 dotenv.config();
-app.use(express.json({ limit: '200kb' }));
+
+// ✅ VERY IMPORTANT — Increase JSON limit for base64 images
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(cookieParser());
-app.use(cors({
-    origin:'http://localhost:5137',
-    credentials:true,
-}))
-const PORT=process.env.PORT;
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
+
+const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-app.use("/api/auth",authRoutes);
-app.use("/api/messages",messageRoutes);
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
+
+// Error Handler
 app.use((err, req, res, next) => {
-  if (err.type === 'entity.too.large') {
-    console.log("file too large");
-    return res.status(413).json({ message: 'Payload too large. Max size is 200KB.' });
+  if (err.type === "entity.too.large") {
+    console.log("File too large");
+    return res
+      .status(413)
+      .json({ message: "Payload too large. Max size is 10MB." });
   }
 
   console.error("Unhandled error:", err);
-  res.status(500).json({ message: 'Internal server error' });
+  res.status(500).json({ message: "Internal server error" });
 });
 
+// Production setup
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.get("/{*any}", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Frontend", "dist", "index.html"));
+  app.get("*", (req, res) => {
+    res.sendFile(
+      path.join(__dirname, "../frontend", "dist", "index.html")
+    );
   });
 }
 
-server.listen(PORT,()=>{
-    console.log("Server is running on port :"+PORT);
-    connectDB();
-})
+// Start Server
+server.listen(PORT, () => {
+  console.log("Server is running on port: " + PORT);
+  connectDB();
+});
