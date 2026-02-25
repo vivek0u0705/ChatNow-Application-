@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import AuthImagePattern from "../components/AuthImagePattern";
 import { Link } from "react-router-dom";
 import {
   Eye,
@@ -10,6 +9,7 @@ import {
   Mail,
   MessageSquare,
 } from "lucide-react";
+import AnimatedChatPreview from "../components/AnimatedChatPreview";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,13 +27,13 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-base-200">
-      {/* Left Side */}
+
+      {/* LEFT SIDE */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full max-w-md">
           <div className="card bg-base-100 shadow-2xl border border-base-300">
             <div className="card-body p-8 space-y-6">
 
-              {/* Logo Section */}
               <div className="text-center space-y-3">
                 <div className="flex justify-center">
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shadow-md">
@@ -48,10 +48,8 @@ const LoginPage = () => {
                 </p>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-5">
 
-                {/* Email */}
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text font-medium">Email</span>
@@ -60,7 +58,7 @@ const LoginPage = () => {
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/40" />
                     <input
                       type="email"
-                      className="input input-bordered w-full pl-10 focus:input-primary transition-all duration-200"
+                      className="input input-bordered w-full pl-10 focus:input-primary"
                       placeholder="you@example.com"
                       value={formData.email}
                       onChange={(e) =>
@@ -74,7 +72,6 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Password */}
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text font-medium">Password</span>
@@ -83,7 +80,7 @@ const LoginPage = () => {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/40" />
                     <input
                       type={showPassword ? "text" : "password"}
-                      className="input input-bordered w-full pl-10 pr-10 focus:input-primary transition-all duration-200"
+                      className="input input-bordered w-full pl-10 pr-10 focus:input-primary"
                       placeholder="••••••••"
                       value={formData.password}
                       onChange={(e) =>
@@ -108,10 +105,9 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  className="btn btn-primary w-full mt-4 shadow-md hover:shadow-lg transition-all duration-200"
+                  className="btn btn-primary w-full mt-4 shadow-md"
                   disabled={isLoggingIn}
                 >
                   {isLoggingIn ? (
@@ -125,7 +121,6 @@ const LoginPage = () => {
                 </button>
               </form>
 
-              {/* Footer */}
               <div className="text-center pt-2">
                 <p className="text-sm text-base-content/60">
                   Don’t have an account?{" "}
@@ -143,13 +138,20 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Right Side */}
-      <AuthImagePattern
-        title={"Welcome back!"}
-        subtitle={
-          "Sign in to continue your conversations and catch up with your messages."
-        }
-      />
+      {/* RIGHT SIDE */}
+      <div className="flex flex-col justify-center items-center p-10 space-y-8">
+
+        <AnimatedChatPreview />
+
+        <div className="text-center max-w-md">
+          <h2 className="text-3xl font-bold">Welcome back!</h2>
+          <p className="text-base-content/60 mt-2">
+            Sign in to continue your conversations and catch up with your messages.
+          </p>
+        </div>
+
+      </div>
+
     </div>
   );
 };
