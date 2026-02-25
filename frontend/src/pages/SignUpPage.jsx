@@ -15,6 +15,7 @@ import AnimatedChatPreviewForSignUp from "../components/AnimatedChatPreviewForSi
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -30,8 +31,8 @@ const SignUpPage = () => {
     if (!formData.email.trim())
       return toast.error("Email is required");
 
-   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-  return toast.error("Invalid email format");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      return toast.error("Invalid email format");
 
     if (!formData.password)
       return toast.error("Password is required");
@@ -49,166 +50,161 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-base-200">
+    <div className="min-h-screen bg-base-200 flex items-center">
+      <div className="w-full max-w-6xl mx-auto grid lg:grid-cols-2">
 
-      {/* LEFT SIDE */}
-      <div className="flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
+        {/* LEFT SIDE */}
+        <div className="flex items-center justify-center p-6 sm:p-12">
+          <div className="w-full max-w-md space-y-8">
 
-          {/* Logo + Title */}
-          <div className="text-center">
-            <div className="flex flex-col items-center gap-2">
-              <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="size-6 text-primary" />
+            {/* Logo + Title */}
+            <div className="text-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <MessageSquare className="size-6 text-primary" />
+                </div>
+                <h1 className="text-2xl font-bold mt-2">
+                  Create Account
+                </h1>
+                <p className="text-base-content/60">
+                  Get started with your free account
+                </p>
               </div>
-              <h1 className="text-2xl font-bold mt-2">
-                Create Account
-              </h1>
+            </div>
+
+            {/* FORM */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+
+              {/* Full Name */}
+              <div>
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Full Name
+                  </span>
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
+                  <input
+                    type="text"
+                    className="input input-bordered w-full pl-10"
+                    placeholder="John Doe"
+                    value={formData.fullName}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        fullName: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Email
+                  </span>
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
+                  <input
+                    type="email"
+                    className="input input-bordered w-full pl-10"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Password
+                  </span>
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="input input-bordered w-full pl-10 pr-10"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        password: e.target.value,
+                      })
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="size-5 text-base-content/40" />
+                    ) : (
+                      <Eye className="size-5 text-base-content/40" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                className="btn btn-primary w-full"
+                disabled={isSigningUp}
+              >
+                {isSigningUp ? (
+                  <>
+                    <Loader2 className="size-5 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
+              </button>
+            </form>
+
+            {/* Footer */}
+            <div className="text-center">
               <p className="text-base-content/60">
-                Get started with your free account
+                Already have an account?{" "}
+                <Link to="/login" className="link link-primary">
+                  Sign in
+                </Link>
               </p>
             </div>
+
           </div>
+        </div>
 
-          {/* FORM */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* RIGHT SIDE */}
+        <div className="hidden lg:flex flex-col items-center justify-center bg-base-300 px-10 py-16 space-y-8 rounded-r-3xl">
 
-            {/* Full Name */}
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">
-                  Full Name
-                </span>
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-                <input
-                  type="text"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      fullName: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
+          <AnimatedChatPreviewForSignUp />
 
-            {/* Email */}
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">
-                  Email
-                </span>
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-                <input
-                  type="email"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      email: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">
-                  Password
-                </span>
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full pl-10 pr-10"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      password: e.target.value,
-                    })
-                  }
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
-                >
-                  {showPassword ? (
-                    <EyeOff className="size-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="size-5 text-base-content/40" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={isSigningUp}
-            >
-              {isSigningUp ? (
-                <>
-                  <Loader2 className="size-5 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </button>
-          </form>
-
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="link link-primary"
-              >
-                Sign in
-              </Link>
+          <div className="text-center max-w-md">
+            <h2 className="text-2xl font-bold">
+              Join our community
+            </h2>
+            <p className="text-base-content/60 mt-3">
+              Connect with friends, share moments, and stay in touch with your loved ones.
             </p>
           </div>
 
         </div>
-      </div>
-
-      {/* RIGHT SIDE */}
-      <div className="hidden lg:flex flex-col items-center justify-center bg-base-300 px-10 space-y-8">
-
-        {/* Animated Chat Box */}
-        <AnimatedChatPreviewForSignUp />
-
-        {/* Info Below Chat */}
-        <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold">
-            Join our community
-          </h2>
-          <p className="text-base-content/60 mt-3">
-            Connect with friends, share moments, and stay in touch with your loved ones.
-          </p>
-        </div>
 
       </div>
-
     </div>
   );
 };
