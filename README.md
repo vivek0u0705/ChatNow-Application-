@@ -24,7 +24,3 @@ Backend:
 - Express
 - MongoDB
 - Socket.io
-
-## 🌐 Live Demo
-
-https://realtime-chat-application-11.onrender.com
