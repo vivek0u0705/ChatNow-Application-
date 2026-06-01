@@ -34,13 +34,14 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    generateToken(newUser._id, res);
+    const token = generateToken(newUser._id);
 
     res.status(201).json({
       _id: newUser._id,
       fullName: newUser.fullName,
       email: newUser.email,
       profilePic: newUser.profilePic,
+      token,
     });
   } catch (error) {
     console.log("Signup Error:", error);
@@ -63,13 +64,14 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    generateToken(user._id, res);
+    const token = generateToken(user._id);
 
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
+      token,
     });
   } catch (error) {
     console.log("Login Error:", error);
@@ -80,7 +82,6 @@ export const login = async (req, res) => {
 // ================= LOGOUT =================
 export const logout = (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Logout Error:", error);
@@ -159,13 +160,14 @@ export const googleAuth = async (req, res) => {
       });
     }
     
-    generateToken(user._id, res);
+    const token = generateToken(user._id);
     
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
+      token,
     });
   } catch (error) {
     console.log("Google Auth Error:", error);
