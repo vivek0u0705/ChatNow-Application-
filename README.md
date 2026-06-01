@@ -123,7 +123,7 @@ To successfully deploy this application, you must configure Google OAuth, host t
    - **Root Directory**: `frontend`
 4. Expand the **Environment Variables** section and add:
    - `VITE_GOOGLE_CLIENT_ID`: The Client ID you got from Step 1.
-   - `VITE_BACKEND_URL`: The deployed URL of your Render backend from Step 2 (e.g., `https://chatnow-api.onrender.com`).
+   - `VITE_API_URL`: The deployed URL of your Render backend from Step 2 (e.g., `https://chatnow-api.onrender.com`).
 5. Click **Deploy**. Once finished, copy your new Vercel domain (e.g., `https://chatnow-frontend.vercel.app`).
 
 ### Step 4: Final Linking (Crucial)
