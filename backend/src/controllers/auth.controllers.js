@@ -2,7 +2,9 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/util.js";
+import { OAuth2Client } from "google-auth-library";
 
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // ================= SIGNUP =================
 export const signup = async (req, res) => {
   try {
@@ -120,6 +122,53 @@ export const checkAuth = (req, res) => {
     res.status(200).json(req.user);
   } catch (error) {
     console.log("CheckAuth Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// ================= GOOGLE AUTH =================
+export const googleAuth = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    
+    if (!credential) {
+      return res.status(400).json({ message: "Credential is required" });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    const payload = ticket.getPayload();
+    const { email, name, picture } = payload;
+    
+    let user = await User.findOne({ email });
+    
+    if (!user) {
+      // Create a random secure password for OAuth users
+      const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+      
+      user = await User.create({
+        fullName: name,
+        email,
+        password: hashedPassword,
+        profilePic: picture,
+      });
+    }
+    
+    generateToken(user._id, res);
+    
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+  } catch (error) {
+    console.log("Google Auth Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -10,6 +10,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import AnimatedChatPreview from "../components/AnimatedChatPreview";
+import { GoogleLogin } from "@react-oauth/google";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +20,7 @@ const LoginPage = () => {
     password: "",
   });
 
-  const { login, isLoggingIn } = useAuthStore();
+  const { login, isLoggingIn, googleAuth } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,6 +121,19 @@ const LoginPage = () => {
                     "Sign In"
                   )}
                 </button>
+
+                <div className="divider text-base-content/60 text-sm">OR</div>
+
+                <div className="flex justify-center w-full">
+                  <GoogleLogin
+                    onSuccess={(credentialResponse) => {
+                      googleAuth(credentialResponse.credential);
+                    }}
+                    onError={() => {
+                      toast.error("Google Login Failed");
+                    }}
+                  />
+                </div>
               </form>
 
               <div className="text-center pt-2">

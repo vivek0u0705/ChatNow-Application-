@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import AnimatedChatPreviewForSignUp from "../components/AnimatedChatPreviewForSignUp";
+import { GoogleLogin } from "@react-oauth/google";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +23,7 @@ const SignUpPage = () => {
     password: "",
   });
 
-  const { signup, isSigningUp } = useAuthStore();
+  const { signup, isSigningUp, googleAuth } = useAuthStore();
 
   const validateForm = () => {
     if (!formData.fullName.trim())
@@ -173,6 +174,19 @@ const SignUpPage = () => {
                   "Create Account"
                 )}
               </button>
+
+              <div className="divider text-base-content/60 text-sm">OR</div>
+
+              <div className="flex justify-center w-full">
+                <GoogleLogin
+                  onSuccess={(credentialResponse) => {
+                    googleAuth(credentialResponse.credential);
+                  }}
+                  onError={() => {
+                    toast.error("Google Sign Up Failed");
+                  }}
+                />
+              </div>
             </form>
 
             {/* Footer */}

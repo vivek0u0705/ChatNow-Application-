@@ -1,9 +1,11 @@
 import express from "express";
-import { signup,login,logout,updateProfile} from "../controllers/auth.controllers.js";
+import { signup,login,logout,updateProfile, googleAuth} from "../controllers/auth.controllers.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import { checkAuth } from "../controllers/auth.controllers.js";
 
 const router = express.Router();
+
+router.post("/google", googleAuth);
 
 // Helpful response when someone visits signup/login in browser (GET)
 router.get("/signup", (_, res) => {
