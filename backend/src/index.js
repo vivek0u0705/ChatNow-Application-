@@ -17,6 +17,9 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
+// ✅ Trust Proxy (Required for secure cookies on Render/Vercel)
+app.set("trust proxy", 1);
+
 app.use(cookieParser());
 
 // ✅ CORS
