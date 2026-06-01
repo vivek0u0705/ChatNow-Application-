@@ -22,7 +22,7 @@ app.use(cookieParser());
 // ✅ CORS (Allow frontend in development)
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : "http://localhost:5173",
     credentials: true,
   })
 );
@@ -32,13 +32,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // ================= SERVE FRONTEND =================
-// Serve React build files
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+if (process.env.NODE_ENV === "production" && !process.env.FRONTEND_URL) {
+  // Serve React build files
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// Handle React Router (all non-API routes)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-});
+  // Handle React Router (all non-API routes)
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+}
 
 // ================= ERROR HANDLER =================
 app.use((err, req, res, next) => {
