@@ -44,45 +44,60 @@ const ChatContainer = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-auto">
+    <div className="flex-1 flex flex-col overflow-hidden bg-base-100/10">
       <ChatHeader />
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-            ref={messageEndRef}
-          >
-            <div className=" chat-image avatar">
-              <div className="size-10 rounded-full border">
-                <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
-                  }
-                  alt="profile pic"
-                />
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar scroll-smooth">
+        {messages.map((message) => {
+          const isSender = message.senderId === authUser._id;
+          return (
+            <div
+              key={message._id}
+              className={`chat ${isSender ? "chat-end" : "chat-start"} animate-fade-in-up`}
+              ref={messageEndRef}
+            >
+              {/* Profile Avatar */}
+              <div className="chat-image avatar">
+                <div className="size-9 rounded-full border border-base-content/10 shadow-sm">
+                  <img
+                    src={
+                      isSender
+                        ? authUser.profilePic || "/avatar.png"
+                        : selectedUser.profilePic || "/avatar.png"
+                    }
+                    alt="profile pic"
+                    className="object-cover size-full"
+                  />
+                </div>
+              </div>
+              
+              {/* Message Timestamp header */}
+              <div className="chat-header mb-1 opacity-50 text-[10px] tracking-wider font-semibold">
+                <time className="mx-1">
+                  {formatMessageTime(message.createdAt)}
+                </time>
+              </div>
+
+              {/* Chat Bubble with dynamic tails/shapes */}
+              <div 
+                className={`chat-bubble flex flex-col gap-1.5 p-3.5 text-sm shadow-sm ${
+                  isSender
+                    ? "bg-primary text-primary-content rounded-2xl rounded-tr-none shadow-sm"
+                    : "bg-base-200 text-base-content rounded-2xl rounded-tl-none border border-base-content/5"
+                }`}
+              >
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="max-w-[260px] rounded-xl mb-1 shadow-sm border border-base-content/10 object-cover"
+                  />
+                )}
+                {message.text && <p className="leading-relaxed">{message.text}</p>}
               </div>
             </div>
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(message.createdAt)}
-              </time>
-            </div>
-            <div className="chat-bubble flex flex-col">
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2"
-                />
-              )}
-              {message.text && <p>{message.text}</p>}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <MessageInput />

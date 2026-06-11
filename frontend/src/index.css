@@ -1,3 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom modern thin scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--fallback-bc,oklch(var(--bc)/0.15));
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--fallback-bc,oklch(var(--bc)/0.3));
+}
+
+/* Premium glassmorphism styles */
+.glass-panel {
+  background: color-mix(in srgb, var(--fallback-b1,oklch(var(--b1))) 75%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--fallback-bc,oklch(var(--bc))) 8%, transparent);
+}
+
+.glass-panel-glow {
+  position: relative;
+}
+
+.glass-panel-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fallback-p,oklch(var(--p))) 30%, transparent), color-mix(in srgb, var(--fallback-s,oklch(var(--s))) 10%, transparent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Micro-animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom interactive input shadow border focus */
+.input-premium {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid color-mix(in srgb, var(--fallback-bc,oklch(var(--bc))) 12%, transparent);
+}
+
+.input-premium:focus-within {
+  border-color: var(--fallback-p,oklch(var(--p)));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fallback-p,oklch(var(--p))) 15%, transparent);
+}

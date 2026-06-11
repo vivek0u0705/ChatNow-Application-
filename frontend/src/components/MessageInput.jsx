@@ -48,32 +48,33 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full bg-base-100/30 border-t border-base-content/5 backdrop-blur-sm">
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
-          <div className="relative">
+          <div className="relative group">
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              className="w-20 h-20 object-cover rounded-xl border border-base-content/10 shadow-md transition-all group-hover:brightness-95"
             />
             <button
               onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
-              flex items-center justify-center"
+              className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-base-content text-base-100 border border-base-100/10 shadow-md flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-150"
               type="button"
             >
-              <X className="size-3" />
+              <X className="size-3.5" />
             </button>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <div className="flex-1 flex gap-2">
+      <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+        <div className="flex-1 flex gap-2 relative">
+          
+          {/* Main Input Textbox */}
           <input
             type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+            className="w-full input input-bordered rounded-full pr-12 input-premium focus:outline-none"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -86,21 +87,28 @@ const MessageInput = () => {
             onChange={handleImageChange}
           />
 
+          {/* Image Upload Trigger Button */}
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
+            className={`absolute right-1.5 top-1/2 -translate-y-1/2 btn btn-ghost btn-circle btn-sm hover:bg-base-content/10 transition-all duration-200
+                     ${imagePreview ? "text-success" : "text-base-content/40 hover:text-primary"}`}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Image size={20} />
+            <Image size={18} />
           </button>
         </div>
+
+        {/* Send Button */}
         <button
           type="submit"
-          className="btn btn-sm btn-circle"
+          className={`btn btn-circle shadow-md transition-all duration-200 active:scale-[0.93] ${
+            text.trim() || imagePreview
+              ? "btn-primary text-primary-content shadow-primary/20 hover:scale-105"
+              : "btn-ghost border border-base-content/5 bg-base-content/5 opacity-40 cursor-not-allowed"
+          }`}
           disabled={!text.trim() && !imagePreview}
         >
-          <Send size={22} />
+          <Send size={18} className="translate-x-[0.5px]" />
         </button>
       </form>
     </div>

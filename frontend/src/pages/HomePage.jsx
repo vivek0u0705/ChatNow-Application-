@@ -8,10 +8,10 @@ const HomePage = () => {
   const { selectedUser } = useChatStore();
 
   return (
-    <div className="h-screen bg-base-200">
-      <div className="flex items-center justify-center pt-20 px-4">
-        <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
-          <div className="flex h-full rounded-lg overflow-hidden">
+    <div className="h-screen bg-base-200 flex items-center justify-center pt-16">
+      <div className="w-full max-w-6xl h-[calc(100vh-6.5rem)] px-4 z-10 animate-fade-in-up">
+        <div className="glass-panel glass-panel-glow shadow-2xl rounded-2xl h-full overflow-hidden">
+          <div className="flex h-full overflow-hidden">
             <Sidebar />
 
             {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
@@ -20,5 +20,5 @@ const HomePage = () => {
       </div>
     </div>
   );
-}
+};
 export default HomePage;
