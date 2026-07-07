@@ -10,11 +10,16 @@ export const useAuthStore = create((set, get) => ({
   isSigningUp: false,
   isLoggingIn: false,
   isUpdatingProfile: false,
-  isCheckingAuth: true,
+  isCheckingAuth: !!localStorage.getItem("jwt"),
   onlineUsers: [],
   socket: null,
 
   checkAuth: async () => {
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      set({ authUser: null, isCheckingAuth: false });
+      return;
+    }
     try {
       const res = await axiosInstance.get("/auth/check");
 
@@ -22,6 +27,7 @@ export const useAuthStore = create((set, get) => ({
       get().connectSocket();
     } catch (error) {
       console.log("Error in checkAuth:", error);
+      localStorage.removeItem("jwt");
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
