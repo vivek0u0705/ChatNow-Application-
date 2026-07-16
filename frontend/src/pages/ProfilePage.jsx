@@ -73,10 +73,10 @@ const ProfilePage = () => {
             <div className="space-y-1.5">
               <div className="text-xs font-semibold opacity-50 flex items-center gap-2 px-1">
                 <User className="w-3.5 h-3.5" />
-                FULL NAME
+                USERNAME
               </div>
               <p className="px-4 py-3 bg-base-200/50 rounded-xl border border-base-content/5 text-sm font-semibold select-all">
-                {authUser?.fullName}
+                {authUser?.username}
               </p>
             </div>
 

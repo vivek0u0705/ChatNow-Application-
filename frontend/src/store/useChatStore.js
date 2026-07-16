@@ -9,6 +9,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
+  isTyping: false,
 
   getUsers: async () => {
     set({ isUsersLoading: true });
@@ -50,18 +51,53 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
 
     socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
+      const currentSelectedUser = get().selectedUser;
+      if (!currentSelectedUser) return;
+      const isMessageSentFromSelectedUser = newMessage.senderId === currentSelectedUser._id;
       if (!isMessageSentFromSelectedUser) return;
-
-      set({
-        messages: [...get().messages, newMessage],
+      
+      // If we are actively in the chat, mark it as read instantly
+      newMessage.isRead = true;
+      set({ messages: [...get().messages, newMessage] });
+      
+      // Notify backend so it updates the DB and the sender's blue ticks
+      socket.emit("markMessageAsRead", { 
+        messageId: newMessage._id, 
+        senderId: newMessage.senderId 
       });
+    });
+
+    socket.on("messagesRead", (readMessageIds) => {
+      const readIdSet = new Set(readMessageIds.map(String));
+      set({
+        messages: get().messages.map((m) =>
+          readIdSet.has(String(m._id)) ? { ...m, isRead: true } : m
+        ),
+      });
+    });
+
+    socket.on("typing", (senderId) => {
+      const currentSelectedUser = get().selectedUser;
+      if (currentSelectedUser && senderId === currentSelectedUser._id) {
+        set({ isTyping: true });
+      }
+    });
+
+    socket.on("stopTyping", (senderId) => {
+      const currentSelectedUser = get().selectedUser;
+      if (currentSelectedUser && senderId === currentSelectedUser._id) {
+        set({ isTyping: false });
+      }
     });
   },
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
+    socket.off("messagesRead");
+    socket.off("typing");
+    socket.off("stopTyping");
+    set({ isTyping: false });
   },
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),

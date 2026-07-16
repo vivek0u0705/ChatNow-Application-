@@ -56,14 +56,14 @@ const LoginPage = () => {
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-semibold opacity-80">Email Address</span>
+                    <span className="label-text font-semibold opacity-80">Email or Username</span>
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/30" />
                     <input
-                      type="email"
+                      type="text"
                       className="input input-bordered w-full pl-11 rounded-xl input-premium focus:outline-none"
-                      placeholder="you@example.com"
+                      placeholder="you@example.com or johndoe"
                       value={formData.email}
                       onChange={(e) =>
                         setFormData({

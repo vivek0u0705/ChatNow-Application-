@@ -18,7 +18,7 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -26,8 +26,8 @@ const SignUpPage = () => {
   const { signup, isSigningUp, googleAuth } = useAuthStore();
 
   const validateForm = () => {
-    if (!formData.fullName.trim())
-      return toast.error("Full name is required");
+    if (!formData.username.trim())
+      return toast.error("Username is required");
 
     if (!formData.email.trim())
       return toast.error("Email is required");
@@ -78,22 +78,22 @@ const SignUpPage = () => {
               {/* FORM */}
               <form onSubmit={handleSubmit} className="space-y-4">
 
-                {/* Full Name */}
+                {/* Username */}
                 <div className="form-control">
                   <label className="label py-1">
-                    <span className="label-text font-semibold opacity-80">Full Name</span>
+                    <span className="label-text font-semibold opacity-80">Username</span>
                   </label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 size-5 text-base-content/30" />
                     <input
                       type="text"
                       className="input input-bordered w-full pl-11 rounded-xl input-premium focus:outline-none"
-                      placeholder="John Doe"
-                      value={formData.fullName}
+                      placeholder="johndoe"
+                      value={formData.username}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          fullName: e.target.value,
+                          username: e.target.value,
                         })
                       }
                     />

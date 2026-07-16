@@ -95,9 +95,24 @@ const ChatContainer = () => {
                 )}
                 {message.text && <p className="leading-relaxed">{message.text}</p>}
               </div>
+
+              {/* Read Receipt Ticks — only shown on messages sent by the logged-in user */}
+              {isSender && (
+                <div className="chat-footer mt-0.5">
+                  <span
+                    className={`text-[11px] font-bold tracking-tight select-none transition-colors duration-300 ${
+                      message.isRead ? "text-blue-400" : "opacity-40"
+                    }`}
+                    title={message.isRead ? "Read" : "Sent"}
+                  >
+                    ✓✓
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}
+
       </div>
 
       <MessageInput />

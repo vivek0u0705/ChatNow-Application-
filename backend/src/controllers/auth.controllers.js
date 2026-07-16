@@ -5,12 +5,13 @@ import { generateToken } from "../lib/util.js";
 import { OAuth2Client } from "google-auth-library";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 // ================= SIGNUP =================
 export const signup = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!fullName || !email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -20,16 +21,23 @@ export const signup = async (req, res) => {
       });
     }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
+    // Check email uniqueness
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
       return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Check username uniqueness
+    const usernameExists = await User.findOne({ username });
+    if (usernameExists) {
+      return res.status(400).json({ message: "Username already taken" });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
-      fullName,
+      username,
       email,
       password: hashedPassword,
     });
@@ -38,7 +46,7 @@ export const signup = async (req, res) => {
 
     res.status(201).json({
       _id: newUser._id,
-      fullName: newUser.fullName,
+      username: newUser.username,
       email: newUser.email,
       profilePic: newUser.profilePic,
       token,
@@ -50,11 +58,17 @@ export const signup = async (req, res) => {
 };
 
 // ================= LOGIN =================
+// Accepts either email or username in the `email` field
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    // Determine if the user typed an email or a username
+    const isEmail = email.includes("@");
+    const user = isEmail
+      ? await User.findOne({ email })
+      : await User.findOne({ username: email }); // reuse `email` field as identifier
+
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -68,7 +82,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({
       _id: user._id,
-      fullName: user.fullName,
+      username: user.username,
       email: user.email,
       profilePic: user.profilePic,
       token,
@@ -147,13 +161,22 @@ export const googleAuth = async (req, res) => {
     let user = await User.findOne({ email });
     
     if (!user) {
-      // Create a random secure password for OAuth users
+      // Derive a username from the Google display name (spaces → underscores)
+      let baseUsername = name.replace(/\s+/g, "_");
+      let username = baseUsername;
+      let suffix = 1;
+
+      // Ensure uniqueness by appending a number if the username is taken
+      while (await User.findOne({ username })) {
+        username = `${baseUsername}_${suffix++}`;
+      }
+
       const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(randomPassword, salt);
       
       user = await User.create({
-        fullName: name,
+        username,
         email,
         password: hashedPassword,
         profilePic: picture,
@@ -164,7 +187,7 @@ export const googleAuth = async (req, res) => {
     
     res.status(200).json({
       _id: user._id,
-      fullName: user.fullName,
+      username: user.username,
       email: user.email,
       profilePic: user.profilePic,
       token,
@@ -173,4 +196,4 @@ export const googleAuth = async (req, res) => {
     console.log("Google Auth Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-};
+};

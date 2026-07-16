@@ -3,7 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
 const ChatHeader = () => {
-  const { selectedUser, setSelectedUser } = useChatStore();
+  const { selectedUser, setSelectedUser, isTyping } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const isOnline = onlineUsers.includes(selectedUser._id);
 
@@ -15,7 +15,7 @@ const ChatHeader = () => {
           <div className="relative">
             <img 
               src={selectedUser.profilePic || "/avatar.png"} 
-              alt={selectedUser.fullName} 
+              alt={selectedUser.username} 
               className="size-10 rounded-full object-cover border border-base-content/10 shadow-sm"
             />
             {isOnline && (
@@ -25,11 +25,38 @@ const ChatHeader = () => {
 
           {/* User details */}
           <div>
-            <h3 className="font-semibold text-sm tracking-wide">{selectedUser.fullName}</h3>
-            <p className="text-xs opacity-60 flex items-center gap-1">
-              <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500" : "bg-base-content/30"}`} />
-              {isOnline ? "Online" : "Offline"}
-            </p>
+            <h3 className="font-semibold text-sm tracking-wide">{selectedUser.username}</h3>
+
+            {/* Typing indicator OR Online/Offline status */}
+            {isTyping ? (
+              <p className="text-xs text-primary flex items-center gap-1 font-medium">
+                typing
+                {/* Animated bouncing dots */}
+                <span className="flex items-center gap-[2px] ml-0.5">
+                  {[0, 150, 300].map((delay) => (
+                    <span
+                      key={delay}
+                      className="inline-block w-1 h-1 bg-primary rounded-full"
+                      style={{
+                        animation: "typingBounce 1s infinite ease-in-out",
+                        animationDelay: `${delay}ms`,
+                      }}
+                    />
+                  ))}
+                </span>
+                <style>{`
+                  @keyframes typingBounce {
+                    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+                    30% { transform: translateY(-4px); opacity: 1; }
+                  }
+                `}</style>
+              </p>
+            ) : (
+              <p className="text-xs opacity-60 flex items-center gap-1">
+                <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500" : "bg-base-content/30"}`} />
+                {isOnline ? "Online" : "Offline"}
+              </p>
+            )}
           </div>
         </div>
 
@@ -44,4 +71,4 @@ const ChatHeader = () => {
     </div>
   );
 };
-export default ChatHeader;
+export default ChatHeader;

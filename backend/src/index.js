@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { app, server } from "./lib/socket.js";
 import path from "path";
+import { generalApiLimiter } from "./middleware/rateLimiter.middleware.js";
 
 dotenv.config();
 
@@ -29,6 +30,10 @@ app.use(
     credentials: true,
   })
 );
+
+// ✅ General API Rate Limiter — 100 requests per 15 minutes, applied to all /api/* routes.
+// Socket.io uses WebSocket (not HTTP), so it bypasses Express middleware entirely — no impact.
+app.use("/api", generalApiLimiter);
 
 // ================= API ROUTES =================
 app.use("/api/auth", authRoutes);

@@ -26,9 +26,43 @@ export const getMessages = async (req, res) => {
         { senderId: myId, receiverId: userToChatId },
         { senderId: userToChatId, receiverId: myId },
       ],
-    });
+    })
+      .sort({ createdAt: -1 })
+      .limit(50);
+      
+    // Reverse them so they display chronologically in the UI (oldest at top, newest at bottom)
+    messages.reverse();
 
-    res.status(200).json(messages);
+
+    // ── READ RECEIPTS ──────────────────────────────────────────────────────
+    // Mark all unread messages FROM the other user TO me as read.
+    // This runs when the receiver opens the chat — same moment they see msgs.
+    const unreadMessageIds = messages
+      .filter((m) => m.senderId.toString() === userToChatId && !m.isRead)
+      .map((m) => m._id);
+
+    if (unreadMessageIds.length > 0) {
+      await Message.updateMany(
+        { _id: { $in: unreadMessageIds } },
+        { $set: { isRead: true } }
+      );
+
+      // Notify the sender in real time so their ✓✓ ticks turn blue instantly
+      const senderSocketId = getReceiverSocketId(userToChatId);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("messagesRead", unreadMessageIds);
+      }
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
+    // Reflect the isRead update in the response so the receiver also gets
+    // accurate isRead values without a second round-trip to the DB.
+    const readIdSet = new Set(unreadMessageIds.map(String));
+    const updatedMessages = messages.map((m) =>
+      readIdSet.has(String(m._id)) ? { ...m.toObject(), isRead: true } : m
+    );
+
+    res.status(200).json(updatedMessages);
   } catch (error) {
     console.log("Error in getMessages controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
