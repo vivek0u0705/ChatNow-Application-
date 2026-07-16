@@ -29,7 +29,7 @@ const ChatContainer = () => {
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messageEndRef.current.scrollIntoView();
     }
   }, [messages]);
 
@@ -47,7 +47,7 @@ const ChatContainer = () => {
     <div className="flex-1 flex flex-col overflow-hidden bg-base-100/10">
       <ChatHeader />
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar scroll-smooth">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
         {messages.map((message) => {
           const isSender = message.senderId === authUser._id;
           return (
