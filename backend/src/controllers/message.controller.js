@@ -7,9 +7,49 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
-    const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
+    
+    // 1. Get all users except current user
+    const users = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
 
-    res.status(200).json(filteredUsers);
+    // 2. Find the most recent message timestamp for each conversation
+    const lastMessages = await Message.aggregate([
+      {
+        $match: {
+          $or: [
+            { senderId: loggedInUserId },
+            { receiverId: loggedInUserId }
+          ]
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: {
+            $cond: {
+              if: { $eq: ["$senderId", loggedInUserId] },
+              then: "$receiverId",
+              else: "$senderId"
+            }
+          },
+          lastMessageTime: { $first: "$createdAt" }
+        }
+      }
+    ]);
+
+    // 3. Attach the last message time and sort
+    const userList = users.map(user => {
+      const lastMsg = lastMessages.find(m => m._id.toString() === user._id.toString());
+      return {
+        ...user.toObject(),
+        lastMessageTime: lastMsg ? lastMsg.lastMessageTime : new Date(0)
+      };
+    });
+
+    userList.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
+
+    res.status(200).json(userList);
   } catch (error) {
     console.error("Error in getUsersForSidebar: ", error.message);
     res.status(500).json({ error: "Internal server error" });
